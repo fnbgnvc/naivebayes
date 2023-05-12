@@ -1,4 +1,11 @@
+
+import java.util.HashMap;
+
 public class Instance {
+    HashMap<String, String>features;
+    public Instance(HashMap<String,String> feats){
+        this.features = feats;
+    }
     //the instances: 
     /*Each instance is described by 9 categorical attributes (features). The name and domain of each
 attribute is described as follows:
@@ -14,5 +21,10 @@ attribute is described as follows:
 8. breast-quad (5 values): left up, left low, right up, right low, central
 9. irradiat (2 values): yes, no*/
 
-
+    //each value can be represented as int? 
+    //ie array of integers: first is between 0-8, next 0-2, etc.
+    //features can be represented as ?? hashmap?
+    // in an instance, the features are a simple hashmap string -> string (name of feature -> value)
+    //in the classifier, features are a nested hashmap name of feature -> hashmap (value -> count)
+    //
 }

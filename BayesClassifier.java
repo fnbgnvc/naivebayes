@@ -4,6 +4,7 @@ public class BayesClassifier{
 
     }
     public double[] bayesTrain(){
+        
         return null;
     }
 }
