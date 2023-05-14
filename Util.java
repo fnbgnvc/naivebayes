@@ -27,15 +27,4 @@ public class Util {
         return insts;
     }
 
-    private HashMap<String,HashMap<String,Integer>> hardcodeLabels(){
-        //create hashmap of labels -> 
-        HashMap<String,Integer> ageMap = new HashMap<>();
-        ageMap.put("10-19",1);
-
-        HashMap<String,Integer> meno = new HashMap<>();
-        meno.put("lt40",1);
-        meno.put("ge40",1);
-        meno.put("premeno",1);
-        return null;
-    }
 }

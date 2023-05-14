@@ -3,8 +3,15 @@ import java.util.HashMap;
 
 public class Instance {
     HashMap<String, String>features;
+    int clas;
     public Instance(HashMap<String,String> feats){
         this.features = feats;
+    }
+    public HashMap<String,String> getFeatures(){
+        return this.features;
+    }
+    public int getClassification(){
+        return this.clas;
     }
     //the instances: 
     /*Each instance is described by 9 categorical attributes (features). The name and domain of each
