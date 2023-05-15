@@ -3,14 +3,15 @@ import java.util.HashMap;
 
 public class Instance {
     HashMap<String, String>features;
-    int clas;
-    public Instance(HashMap<String,String> feats){
+    String clas;
+    public Instance(HashMap<String,String> feats, String clas){
         this.features = feats;
+        this.clas=clas;
     }
     public HashMap<String,String> getFeatures(){
         return this.features;
     }
-    public int getClassification(){
+    public String getClassification(){
         return this.clas;
     }
     //the instances: 
