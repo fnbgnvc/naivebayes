@@ -1,13 +1,8 @@
 import java.util.ArrayList;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.stream.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Scanner;
-import java.util.ArrayList;
-import java.util.Collections;
 
 
 public class Util {
@@ -19,7 +14,7 @@ public class Util {
 
         try{
             Scanner s = new Scanner(f);
-            s.useDelimiter(",");
+            s.useDelimiter(",|\\n");
             s.next();
             HashMap<Integer,String> index = new HashMap<>();
             for(int i = 0; i< 9; i++){
@@ -28,6 +23,7 @@ public class Util {
                 index.put(i,featureName);
             }
             while(s.hasNext()){
+                s.next();
                 String clas = s.next();
                 HashMap<String,String> hm = new HashMap<>();
                 for(int i = 0; i<9;i++){
@@ -40,8 +36,6 @@ public class Util {
                 insts.add(new Instance(hm,clas));
             }
             //add names to 
-
-
             s.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
