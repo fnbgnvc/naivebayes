@@ -22,6 +22,21 @@ public class BayesClassifier{
         this.class_probs = new double[classLabels.size()];
         this.probtable = bayesTrain(this.instances);
         System.out.println("hi");
+        int acc = 0;
+        for(Instance i : readFile(testFile)){
+            double c1 = classScore(i, classLabels.get(0), probtable, class_probs);
+            double c2 = classScore(i, classLabels.get(1),probtable,class_probs);
+            String predicted_label = "";
+            if(c1>c2){predicted_label=classLabels.get(0);}
+            else if (c2>c1){predicted_label=classLabels.get(0);}
+            else{
+                System.out.println(c1 + " " + c2);
+            }
+            if(predicted_label.equals(i.getClassification())){acc++;}
+            System.out.println("Predicted: " + predicted_label + " Actual: " + i.getClassification());
+        }
+        System.out.println("Accuracy: " + 1.0*acc/1.0*readFile(testFile).size());
+        
 
     }
     //let y= class label and x1....xm = features
@@ -48,9 +63,7 @@ public class BayesClassifier{
             class_total+=class_count[i];
             for(String feature : value_count.keySet()){
                 total_by_feature_class.put(feature,new HashMap<>());
-                for(String s : classLabels){
-                    total_by_feature_class.get(feature).put(s, 0);
-                }
+                total_by_feature_class.get(feature).put(iclas, 0);
                 //for every possible value of x
                 for(String value : value_count.get(feature).keySet()){
                     int ad = 0;
@@ -74,6 +87,7 @@ public class BayesClassifier{
             }
         }
 
+        
 
 
 
@@ -82,13 +96,22 @@ public class BayesClassifier{
         for(String i : classLabels){
             probtable.put(i,new HashMap<>());
             //probability(y) = count(y)/class_total
-            class_probs[classLabels.indexOf(i)] = class_count[classLabels.indexOf(i)]/class_total;
+            System.out.println(class_count[classLabels.indexOf(i)] + " " + class_total + " " + 
+             (1.0*class_count[classLabels.indexOf(i)])/(1.0*class_total));
+            class_probs[classLabels.indexOf(i)] = (1.0*class_count[classLabels.indexOf(i)])/(1.0*class_total);
             
             for(String feature : value_count.keySet()){
                 probtable.get(i).put(feature, new HashMap<>());
                 for(String val : value_count.get(feature).keySet()){
-                    double denom = total_by_feature_class.get(feature).get(i);
-                    double prob = value_count.get(feature).get(val).get(i);
+                    double denom = 0;
+                    if(!total_by_feature_class.get(feature).containsKey(i)){
+                        denom = 1.0;
+                    }
+                    else{
+                        denom = 1.0*total_by_feature_class.get(feature).get(i);
+                    }
+                    double prob = 1.0*value_count.get(feature).get(val).get(i);
+                    System.out.println(denom + " " + prob + " " + prob/denom);
                     probtable.get(i).get(feature).put(val, prob/denom);
                     //prob(feature, value, class) = count(feature, value, class)/total(feature, class)
                 }
@@ -99,8 +122,13 @@ public class BayesClassifier{
         return probtable;
     }
 
-    public double classScore(Instance inst, int clasLabel, double[][]prob){
-        return 0;
+    public double classScore(Instance inst, String clas, HashMap<String, HashMap<String,HashMap<String,Double>>>prob, double[] class_probs){
+        double score = class_probs[classLabels.indexOf(clas)];
+        for(String feature : inst.getFeatures().keySet()){
+            score = score * prob.get(clas).get(feature).get(inst.getFeatures().get(feature));
+            System.out.println(prob.get(clas).get(feature).get(inst.getFeatures().get(feature)));
+        }
+        return score;
     }
 
     public ArrayList<Instance> readFile(String filename){
@@ -118,7 +146,7 @@ public class BayesClassifier{
                 hs.put(featureName,new HashMap<String,HashMap<String,Integer>>());
                 index.put(i,featureName);
             }
-            this.value_count = hs;
+            
             while(s.hasNext()){
                 s.next();
                 String clas = s.next().toString();
@@ -143,10 +171,32 @@ public class BayesClassifier{
                 insts.add(new Instance(hm,clas));
             }
             //add names to 
+            this.value_count = hardcodeLabels(hs);
             s.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return insts;
+    }
+
+    public HashMap<String, HashMap<String,HashMap<String,Integer>>> hardcodeLabels(HashMap<String, HashMap<String,HashMap<String,Integer>>> vals){
+        HashMap<String,Integer> simple = new HashMap<>();
+        simple.put("no-recurrence-events",1);
+        simple.put("recurrence-events",1);
+
+        vals.get("age").put("10-19",simple);
+        vals.get("age").put("80-89",simple);
+        vals.get("age").put("90-99",simple);
+        vals.get("tumor-size").put("55-59",simple);
+        vals.get("inv-nodes").put("18-20",simple);
+        vals.get("inv-nodes").put("21-23",simple);
+        vals.get("inv-nodes").put("27-29",simple);
+        vals.get("inv-nodes").put("30-32",simple);
+        vals.get("inv-nodes").put("33-35",simple);
+        vals.get("inv-nodes").put("36-39",simple);
+
+        
+
+        return vals;
     }
 }
