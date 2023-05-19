@@ -21,18 +21,16 @@ public class BayesClassifier{
         this.instances = readFile(trainFile);
         this.class_probs = new double[classLabels.size()];
         this.probtable = bayesTrain(this.instances);
-        System.out.println("hi");
         int acc = 0;
+        //printConditionalProbs();
         for(Instance i : readFile(testFile)){
             double c1 = classScore(i, classLabels.get(0), probtable, class_probs);
             double c2 = classScore(i, classLabels.get(1),probtable,class_probs);
             String predicted_label = "";
             if(c1>c2){predicted_label=classLabels.get(0);}
             else if (c2>c1){predicted_label=classLabels.get(0);}
-            else{
-                System.out.println(c1 + " " + c2);
-            }
             if(predicted_label.equals(i.getClassification())){acc++;}
+            System.out.println("no-rec:" + c1 + " rec: " + c2);
             System.out.println("Predicted: " + predicted_label + " Actual: " + i.getClassification());
         }
         System.out.println("Accuracy: " + 1.0*acc/1.0*readFile(testFile).size());
@@ -43,6 +41,19 @@ public class BayesClassifier{
     //counts: make a hashmap with a string as the key, and another hashmap as the value.
     //The first map uses the label on the left as the key, and then the nested map for that is using each possible value as a key in that, 
     //and uses an int as the value, and when setting up, every value is 1
+
+    public void printConditionalProbs(){
+        for(String clas : probtable.keySet()){
+            System.out.println(clas + ":");
+            for(String feat : probtable.get(clas).keySet()){
+                System.out.println("  " + feat + ":");
+                for(String val : probtable.get(clas).get(feat).keySet()){
+                    System.out.println("    " + val + ":");
+                    System.out.println("      " + probtable.get(clas).get(feat).get(val));
+                }
+            }
+        }
+    }
     public HashMap<String,HashMap<String,HashMap<String,Double>>> bayesTrain(ArrayList<Instance> insts){
         //initialise counts to 1
         //calculate amounts of: class 1/2, 
@@ -96,22 +107,20 @@ public class BayesClassifier{
         for(String i : classLabels){
             probtable.put(i,new HashMap<>());
             //probability(y) = count(y)/class_total
-            System.out.println(class_count[classLabels.indexOf(i)] + " " + class_total + " " + 
-             (1.0*class_count[classLabels.indexOf(i)])/(1.0*class_total));
             class_probs[classLabels.indexOf(i)] = (1.0*class_count[classLabels.indexOf(i)])/(1.0*class_total);
             
             for(String feature : value_count.keySet()){
                 probtable.get(i).put(feature, new HashMap<>());
                 for(String val : value_count.get(feature).keySet()){
+                    
+                    double prob = 1.0*value_count.get(feature).get(val).get(i);
                     double denom = 0;
                     if(!total_by_feature_class.get(feature).containsKey(i)){
-                        denom = 1.0;
+                        denom = prob;
                     }
                     else{
                         denom = 1.0*total_by_feature_class.get(feature).get(i);
                     }
-                    double prob = 1.0*value_count.get(feature).get(val).get(i);
-                    System.out.println(denom + " " + prob + " " + prob/denom);
                     probtable.get(i).get(feature).put(val, prob/denom);
                     //prob(feature, value, class) = count(feature, value, class)/total(feature, class)
                 }
@@ -126,7 +135,6 @@ public class BayesClassifier{
         double score = class_probs[classLabels.indexOf(clas)];
         for(String feature : inst.getFeatures().keySet()){
             score = score * prob.get(clas).get(feature).get(inst.getFeatures().get(feature));
-            System.out.println(prob.get(clas).get(feature).get(inst.getFeatures().get(feature)));
         }
         return score;
     }
