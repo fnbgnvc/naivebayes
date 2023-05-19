@@ -30,7 +30,7 @@ public class BayesClassifier{
             if(c1>c2){predicted_label=classLabels.get(0);}
             else if (c2>c1){predicted_label=classLabels.get(0);}
             if(predicted_label.equals(i.getClassification())){acc++;}
-            System.out.println("no-rec:" + c1 + " rec: " + c2);
+            //System.out.println("no-rec:" + c1 + " rec: " + c2);
             System.out.println("Predicted: " + predicted_label + " Actual: " + i.getClassification());
         }
         System.out.println("Accuracy: " + 1.0*acc/1.0*readFile(testFile).size());
